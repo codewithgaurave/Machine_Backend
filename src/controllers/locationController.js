@@ -183,12 +183,15 @@ export const getStates = async (req, res) => {
   }
 }
 
-// 4. Get Cities for a State
+// 4. Get Cities (Filtered by State or All Active Cities for Mobile App)
 export const getCities = async (req, res) => {
   try {
-    const { state = 'Uttar Pradesh', search = '', status = 'All', page = 1, limit = 100 } = req.query
+    const { state, search = '', status = 'All', page = 1, limit = 100 } = req.query
 
-    const query = { state }
+    const query = {}
+    if (state && state !== 'All') {
+      query.state = state
+    }
     if (status !== 'All') {
       query.status = status
     }
