@@ -13,6 +13,7 @@ export const getEnquiries = async (req, res) => {
       status = 'All',
       enquiryType = 'All',
       sellerPhone,
+      listingId,
       page = 1,
       limit = 10,
       sortBy = 'createdAt',
@@ -20,6 +21,11 @@ export const getEnquiries = async (req, res) => {
     } = req.query
 
     const query = {}
+
+    // Filter by specific listing if provided
+    if (listingId && listingId.trim()) {
+      query.listingId = listingId.trim()
+    }
 
     // Strict Seller Isolation: If sellerPhone is passed (from Seller Mobile App),
     // ONLY return enquiries that Admin has explicitly assigned to this seller!

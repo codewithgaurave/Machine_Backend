@@ -229,13 +229,9 @@ export const getListingById = async (req, res) => {
       return errorResponse(res, 'Listing not found', 404)
     }
 
-    // Attach dynamic enquiries count
+    // Attach dynamic enquiries count strictly by listingId
     const enqCount = await Enquiry.countDocuments({
-      $or: [
-        { listingId: listing._id },
-        { machine: listing.title },
-        { machineName: listing.title },
-      ],
+      listingId: listing._id,
     })
     listing.enquiriesCount = enqCount
 
@@ -941,19 +937,15 @@ export const getMyListings = async (req, res) => {
 
     const listings = await Listing.find(filter).sort('-createdAt').limit(100).lean()
 
-    // Enrich each listing with live enquiriesCount
+    // Enrich each listing with live enquiriesCount strictly by listingId
     const enrichedListings = await Promise.all(
       listings.map(async (l) => {
         const enqCount = await Enquiry.countDocuments({
-          $or: [
-            { listingId: l._id },
-            { machine: l.title },
-            { machineName: l.title },
-          ],
+          listingId: l._id,
         })
         return {
           ...l,
-          enquiriesCount: Math.max(l.enquiriesCount || 0, enqCount),
+          enquiriesCount: enqCount,
         }
       })
     )
